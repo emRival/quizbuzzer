@@ -1,0 +1,82 @@
+name: Draft Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    name: Build Multi-Platform
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+        include:
+          - os: ubuntu-latest
+            platform: apk
+          - os: macos-latest
+            platform: macos
+          - os: windows-latest
+            platform: windows
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Java
+        if: matrix.platform == 'apk'
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'zulu'
+          java-version: '17'
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: 'stable'
+
+      - name: Install Dependencies
+        run: flutter pub get
+
+      # Build APK on Linux
+      - name: Build APK
+        if: matrix.platform == 'apk'
+        run: |
+          flutter build apk --release
+          mv build/app/outputs/flutter-apk/app-release.apk build/app/outputs/flutter-apk/Quiz-Buzzer-Android.apk
+
+      # Build macOS DMG on macOS
+      - name: Build macOS DMG
+        if: matrix.platform == 'macos'
+        run: |
+          flutter build macos --release
+          mkdir -p build/dmg_temp
+          cp -R "build/macos/Build/Products/Release/Quiz Buzzer.app" build/dmg_temp/
+          ln -s /Applications build/dmg_temp/Applications
+          hdiutil create -volname "Quiz Buzzer Installer" -srcfolder build/dmg_temp -ov -format UDZO "build/macos/Build/Products/Release/Quiz-Buzzer-MacOS.dmg"
+
+      # Build Windows EXE on Windows
+      - name: Build Windows
+        if: matrix.platform == 'windows'
+        run: |
+          flutter build windows --release
+
+      - name: Zip Windows Release
+        if: matrix.platform == 'windows'
+        shell: pwsh
+        run: |
+          Compress-Archive -Path build\windows\x64\runner\Release\* -DestinationPath build\windows\Quiz-Buzzer-Windows.zip
+
+      # Upload Artifacts to Release
+      - name: Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            build/app/outputs/flutter-apk/Quiz-Buzzer-Android.apk
+            build/macos/Build/Products/Release/Quiz-Buzzer-MacOS.dmg
+            build/windows/Quiz-Buzzer-Windows.zip
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
