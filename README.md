@@ -1,70 +1,91 @@
-# Quiz Buzzer
+<p align="center">
+  <img src="assets/logo.png" width="180" alt="Quiz Buzzer Logo" style="border-radius: 20%;">
+</p>
 
-Aplikasi bel kuis interaktif berbasis jaringan lokal (offline) yang dirancang untuk kebutuhan edukasi, kuis interaktif, maupun acara cerdas cermat. Sistem ini menggunakan arsitektur **Host-Client** di mana laptop juri bertindak sebagai server lokal, dan peserta kuis dapat terhubung secara instan menggunakan browser di HP mereka tanpa perlu menginstal aplikasi tambahan.
+<h1 align="center">Quiz Buzzer</h1>
+
+<p align="center">
+  Aplikasi bel kuis interaktif luring (offline) berbasis jaringan lokal yang menghubungkan juri dan peserta secara instan melalui protokol WebSocket.
+</p>
+
+<p align="center">
+  <a href="https://github.com/emRival/quizbuzzer/releases/latest/download/Quiz-Buzzer-Android.apk">
+    <img src="https://img.shields.io/badge/Download-Android%20%28APK%29-3DDC84?style=for-the-badge&logo=android&logoColor=white" alt="Download Android APK">
+  </a>
+  <a href="https://github.com/emRival/quizbuzzer/releases/latest/download/Quiz-Buzzer-MacOS.dmg">
+    <img src="https://img.shields.io/badge/Download-macOS%20%28DMG%29-000000?style=for-the-badge&logo=apple&logoColor=white" alt="Download macOS DMG">
+  </a>
+  <a href="https://github.com/emRival/quizbuzzer/releases/latest/download/Quiz-Buzzer-Windows.zip">
+    <img src="https://img.shields.io/badge/Download-Windows%20%28ZIP%29-0078D4?style=for-the-badge&logo=windows&logoColor=white" alt="Download Windows ZIP">
+  </a>
+</p>
 
 ---
 
-## 🚀 Fitur Utama
+## 📋 Deskripsi Proyek
 
-- **Offline 100% (Local Network):** Berjalan sepenuhnya di jaringan lokal tanpa memerlukan koneksi internet aktif.
-- **Client Berbasis Web:** Peserta hanya perlu memindai QR Code atau mengetik alamat IP host di browser HP untuk masuk ke lobi kuis.
-- **Dashboard Juri (Host UI):** Kontrol penuh untuk memulai ronde baru, mereset bel, mengunci pemenang bel tercepat, serta melihat urutan skor.
-- **Fitur Kick Player:** Host dapat mengeluarkan pemain yang tidak sah secara langsung dari daftar lobi peserta.
-- **Deteksi Jaringan Otomatis:** Menampilkan alamat IP host aktif dan membuat QR Code secara dinamis untuk memudahkan koneksi peserta.
-- **Efek Suara & Visual:** Dilengkapi dengan timer countdown yang stabil dan efek confetti animasi saat pemenang bel terkunci.
+**Quiz Buzzer** adalah solusi penyelenggaraan kuis interaktif dan cerdas cermat yang dapat berjalan sepenuhnya tanpa koneksi internet. Menggunakan model arsitektur **Host-Client**, aplikasi juri bertindak sebagai pusat server lokal (Host) yang menyebarkan jaringan luring, sementara para peserta dapat terhubung langsung (Client) hanya dengan membuka peramban web (*web browser*) di HP masing-masing melalui alamat IP host atau pemindaian kode QR.
 
 ---
 
-## 🛠️ Persyaratan Sistem
+## ✨ Fitur Unggulan
 
-- **Sistem Operasi Host:** Windows, macOS, atau Linux (untuk menjalankan aplikasi Juri).
-- **Client (Peserta):** Perangkat apa pun (Android, iOS, laptop) yang memiliki web browser modern (Chrome, Safari, Edge).
-- **Jaringan:** Seluruh perangkat harus terhubung dalam satu jaringan lokal yang sama (Wi-Fi atau Hotspot pribadi).
+- **Konektivitas Mandiri (100% Offline):** Menghubungkan perangkat juri dan HP peserta secara luring melalui infrastruktur jaringan lokal tanpa memerlukan paket data seluler atau internet.
+- **Client Tanpa Instalasi:** Peserta dapat langsung berkompetisi cukup dengan membuka browser bawaan HP mereka (Chrome, Safari, Edge, dll.).
+- **Dashboard Juri Komprehensif:** Antarmuka kontrol penuh untuk memulai ronde, melakukan reset bel kuis secara berkala, mengunci pemenang tercepat, serta memantau perolehan skor peserta secara langsung.
+- **Sistem Keamanan Keanggotaan (Kick Player):** Memberikan wewenang penuh kepada Juri untuk mengeluarkan peserta yang tidak sah dari lobi kuis melalui satu klik mudah.
+- **Navigasi IP & QR Code Dinamis:** Membaca alamat IP aktif Host secara otomatis dan menampilkannya dalam format teks dan QR Code siap pindai.
+- **Pengoptimalan Kinerja Jaringan:** Dilengkapi pencegah tabrakan interval timer (*overlapping countdown*) untuk menjaga stabilitas lalu lintas data WebSocket selama pertandingan berlangsung.
 
 ---
 
-## 🏃 Cara Menjalankan Proyek (Development)
+## 💻 Spesifikasi Sistem
 
-1. Pastikan Anda telah menginstal **Flutter SDK** di komputer Anda.
-2. Clone repositori ini dan masuk ke direktori proyek:
+- **Sisi Host (Aplikasi Juri):** Berjalan pada sistem operasi macOS, Windows, atau Linux.
+- **Sisi Client (Aplikasi Peserta):** Kompatibel dengan semua perangkat pintar (Android, iOS, iPadOS, Laptop) yang memiliki peramban web modern.
+- **Persyaratan Jaringan:** Seluruh perangkat wajib berada di dalam satu subnet jaringan lokal yang sama (Wi-Fi lokal atau tethering Hotspot Pribadi).
+
+---
+
+## 🚀 Panduan Memulai Cepat (Development)
+
+1. Pastikan lingkungan pengembangan Anda telah terinstal **Flutter SDK**.
+2. Dapatkan salinan repositori dan masuk ke folder proyek:
    ```bash
    git clone https://github.com/emRival/quizbuzzer.git
    cd quizbuzzer
    ```
-3. Unduh dependensi proyek:
+3. Pasang semua dependensi Flutter yang dibutuhkan:
    ```bash
    flutter pub get
    ```
-4. Jalankan aplikasi Host/Juri:
+4. Jalankan aplikasi Host sesuai platform target:
    - **macOS:** `flutter run -d macos`
    - **Windows:** `flutter run -d windows`
-   - **Android:** `flutter run -d android`
 
 ---
 
-## 📶 Panduan Koneksi & Pemecahan Masalah (Troubleshooting)
+## 📶 Pemecahan Masalah Koneksi (Troubleshooting)
 
-Agar HP peserta dapat terhubung ke laptop Host, pastikan hal-hal berikut terpenuhi:
+### 1. Hambatan AP Isolation pada Router Wi-Fi
+Beberapa router Wi-Fi publik (di sekolah, kantor, atau kafe) mengaktifkan fitur *AP Isolation* yang membatasi perangkat agar tidak dapat saling berkomunikasi langsung.
+- **Solusi Praktis:** Aktifkan **Hotspot Pribadi** pada perangkat HP, sambungkan Wi-Fi laptop Host ke Hotspot tersebut, dan arahkan HP peserta untuk terhubung ke jaringan Hotspot yang sama. Langkah ini membebaskan seluruh lalu lintas data dari pembatasan router eksternal secara instan.
 
-### 1. Masalah AP Isolation (Isolasi Klien) pada Wi-Fi Publik
-Banyak jaringan Wi-Fi sekolah, kantor, atau tempat umum mengaktifkan fitur keamanan **AP Isolation (Access Point Isolation)** yang memblokir komunikasi antar-perangkat di satu Wi-Fi.
-- **Solusi Terbaik & Tercepat:** Aktifkan **Hotspot Pribadi (Personal Hotspot)** pada salah satu HP, hubungkan laptop Mac/Windows Anda ke Hotspot tersebut, lalu biarkan HP peserta terhubung ke Hotspot yang sama. Ini menjamin komunikasi langsung (*peer-to-peer*) berjalan sukses 100%.
-
-### 2. Keamanan Jaringan Lokal macOS Sequoia
-Pada macOS Sequoia, aplikasi membutuhkan izin manual untuk mengakses jaringan lokal.
-- Proyek ini telah dilengkapi konfigurasi `NSLocalNetworkUsageDescription` di file `Info.plist`. Pastikan untuk memilih **Allow (Izinkan)** saat aplikasi meminta akses Jaringan Lokal saat pertama kali dibuka dari folder `/Applications`.
+### 2. Izin Keamanan Jaringan Lokal macOS Sequoia
+macOS Sequoia menerapkan pengawasan ketat terhadap port jaringan lokal.
+- Aplikasi ini telah disematkan deskripsi keamanan `NSLocalNetworkUsageDescription`. Pastikan Anda memberikan persetujuan akses (*Allow/Izinkan*) pada kotak dialog popup yang muncul saat pertama kali membuka aplikasi dari folder `/Applications`.
 
 ---
 
-## 📦 Panduan Kompilasi Rilis Resmi (Komputer Lokal)
+## 📦 Kompilasi Berkas Rilis Resmi
 
-Gunakan perintah berikut untuk men-compile aplikasi ke versi rilis produksi final secara lokal:
+Untuk membangun berkas rilis final secara mandiri pada perangkat komputer lokal Anda:
 
 - **Android (APK):**
   ```bash
   flutter build apk --release
   ```
-- **macOS (App Bundle & DMG):**
+- **macOS (App Bundle / DMG):**
   ```bash
   flutter build macos --release
   ```
@@ -72,16 +93,3 @@ Gunakan perintah berikut untuk men-compile aplikasi ke versi rilis produksi fina
   ```bash
   flutter build windows --release
   ```
-
----
-
-## 🤖 Rilis Otomatis Multi-Platform (GitHub Actions)
-
-Proyek ini telah dilengkapi dengan sistem otomatisasi **GitHub Actions** (`.github/workflows/release.yml`). Anda dapat membuat file installer untuk **Android, macOS, dan Windows sekaligus** secara otomatis tanpa perlu melakukan kompilasi manual di masing-masing perangkat:
-
-1. Buat versi tag baru di Git dan push ke GitHub (misal: `v1.0.0`):
-   ```bash
-   git tag v1.0.0
-   git push origin v1.0.0
-   ```
-2. Server GitHub akan otomatis menjalankan proses build secara paralel dan mengunggah hasilnya (`.apk`, `.dmg`, `.zip` Windows) langsung ke halaman **Releases** repositori GitHub Anda.
