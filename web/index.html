@@ -1,0 +1,832 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Quiz Buzzer - Player Portal</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Outfit:wght@400;500;600;700;800&display=swap');
+
+    :root {
+      --bg-primary: #F4F8FC; /* Soft clean light blue background */
+      --bg-secondary: #FFFFFF; /* Pure white panels */
+      --bg-card: #FFFFFF;
+      --border-color: #E2ECF6; /* Extremely soft sky blue borders */
+      --accent-blue: #2563EB; /* Premium Royal Blue */
+      --accent-sky: #60A5FA; /* Soft Sky Blue */
+      --text-primary: #1E293B; /* Readability-focused dark slate */
+      --text-secondary: #64748B; /* Professional slate grey */
+      --text-muted: #94A3B8;
+      --success: #10B981; /* Soft Emerald Green */
+      --error: #EF4444; /* Clean Soft Red */
+      --warning: #F59E0B; /* Warm Amber */
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow-x: hidden;
+      position: relative;
+    }
+
+    /* Ambient soft background gradient */
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: 
+        radial-gradient(circle at 0% 0%, rgba(96, 165, 250, 0.12) 0%, transparent 40%),
+        radial-gradient(circle at 100% 100%, rgba(37, 99, 247, 0.08) 0%, transparent 45%);
+      pointer-events: none;
+      z-index: -1;
+    }
+
+    /* Main Container */
+    #login-view, #buzzer-view {
+      width: 100%;
+      max-width: 440px;
+      margin: auto;
+      padding: 24px 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .hidden { display: none !important; }
+
+    /* Elegant Minimalist White Card */
+    .premium-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 24px;
+      padding: 32px 24px;
+      box-shadow: 0 10px 30px rgba(37, 99, 235, 0.04), 0 1px 3px rgba(0, 0, 0, 0.02);
+      transition: all 0.3s ease;
+    }
+
+    .logo {
+      text-align: center;
+      margin-bottom: 8px;
+    }
+
+    .logo h1 {
+      font-family: 'Outfit', sans-serif;
+      font-size: 2.3rem;
+      font-weight: 800;
+      color: var(--accent-blue);
+      letter-spacing: -0.5px;
+    }
+
+    .logo p {
+      color: var(--text-secondary);
+      font-size: 0.95rem;
+      margin-top: 6px;
+      font-weight: 500;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .form-group label {
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: var(--text-secondary);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    input[type="text"] {
+      width: 100%;
+      padding: 16px 18px;
+      font-size: 1.05rem;
+      font-weight: 600;
+      background: #F8FAFC;
+      border: 1px solid #E2E8F0;
+      border-radius: 14px;
+      color: var(--text-primary);
+      outline: none;
+      transition: all 0.25s ease;
+    }
+
+    input[type="text"]:focus {
+      border-color: var(--accent-sky);
+      background: #FFFFFF;
+      box-shadow: 0 0 0 4px rgba(96, 165, 250, 0.15);
+    }
+
+    input[type="text"]::placeholder {
+      color: var(--text-muted);
+    }
+
+    button {
+      padding: 16px 28px;
+      font-size: 1.05rem;
+      font-weight: 700;
+      font-family: 'Outfit', sans-serif;
+      border: none;
+      border-radius: 14px;
+      cursor: pointer;
+      transition: all 0.25s ease;
+    }
+
+    .btn-primary {
+      background: var(--accent-blue);
+      color: #FFFFFF;
+      box-shadow: 0 4px 14px rgba(37, 99, 235, 0.2);
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(37, 99, 235, 0.35);
+      background: #1D4ED8;
+    }
+
+    .btn-primary:active {
+      transform: translateY(0);
+    }
+
+    /* Player Info Bar */
+    .player-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      padding: 12px 18px;
+      border-radius: 18px;
+      box-shadow: 0 4px 20px rgba(37, 99, 235, 0.02);
+    }
+
+    .player-profile {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .player-avatar {
+      width: 38px;
+      height: 38px;
+      border-radius: 12px;
+      background: #EFF6FF;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      font-size: 1.15rem;
+      color: var(--accent-blue);
+      border: 1px solid rgba(37, 99, 235, 0.1);
+    }
+
+    .player-name {
+      font-weight: 700;
+      font-size: 1.05rem;
+      color: var(--text-primary);
+    }
+
+    .my-score-badge {
+      font-size: 0.85rem;
+      font-weight: 800;
+      color: var(--accent-blue);
+      background: #EFF6FF;
+      border: 1px solid rgba(37, 99, 235, 0.12);
+      padding: 6px 14px;
+      border-radius: 12px;
+    }
+
+    /* Buzzer Controls */
+    .buzzer-area {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 18px;
+    }
+
+    .status-badge {
+      width: 100%;
+      text-align: center;
+      padding: 14px 20px;
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 14px;
+      font-size: 0.95rem;
+      font-weight: 700;
+      letter-spacing: 0.2px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.01);
+      transition: all 0.4s ease;
+    }
+
+    .status-badge.waiting {
+      border-color: rgba(245, 158, 11, 0.2);
+      color: var(--warning);
+      background: #FFFBEB;
+    }
+
+    .status-badge.ready {
+      border-color: rgba(37, 99, 235, 0.2);
+      color: var(--accent-blue);
+      background: #EFF6FF;
+    }
+
+    .status-badge.winner {
+      border-color: rgba(16, 185, 129, 0.2);
+      color: var(--success);
+      background: #ECFDF5;
+    }
+
+    /* Giant Interactive Soft Blue Buzzer Button */
+    .buzzer-btn {
+      width: 220px;
+      height: 220px;
+      border-radius: 50%;
+      background: #FFFFFF;
+      border: 8px solid #E2ECF6;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: not-allowed;
+      position: relative;
+      transition: all 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      outline: none;
+      box-shadow: 0 10px 30px rgba(37, 99, 235, 0.05);
+    }
+
+    .buzzer-btn .btn-text {
+      font-family: 'Outfit', sans-serif;
+      font-size: 1.65rem;
+      font-weight: 800;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      transition: all 0.25s ease;
+    }
+
+    /* Buzzer Active (Ready to Press) State */
+    .buzzer-btn.active {
+      background: radial-gradient(circle, #3B82F6 0%, #1D4ED8 100%);
+      border-color: #93C5FD;
+      cursor: pointer;
+      box-shadow: 0 14px 40px rgba(37, 99, 235, 0.3);
+      animation: soft-pulse 1.8s infinite;
+    }
+
+    .buzzer-btn.active .btn-text {
+      color: #FFFFFF;
+    }
+
+    @keyframes soft-pulse {
+      0%, 100% { transform: scale(1); box-shadow: 0 14px 40px rgba(37, 99, 235, 0.3); }
+      50% { transform: scale(1.04); box-shadow: 0 18px 50px rgba(37, 99, 235, 0.45); }
+    }
+
+    .buzzer-btn.active:active {
+      transform: scale(0.92);
+    }
+
+    /* Buzzer Winner State */
+    .buzzer-btn.winner {
+      background: radial-gradient(circle, #10B981 0%, #047857 100%);
+      border-color: #A7F3D0;
+      box-shadow: 0 10px 30px rgba(16, 185, 129, 0.4);
+      transform: scale(1.06);
+    }
+
+    .buzzer-btn.winner .btn-text {
+      color: #FFFFFF;
+    }
+
+    /* Countdown Styling */
+    .buzzer-btn.countdown {
+      background: radial-gradient(circle, #FBBF24 0%, #D97706 100%);
+      border-color: #FDE68A;
+      box-shadow: 0 10px 30px rgba(245, 158, 11, 0.3);
+    }
+
+    .countdown-number {
+      font-size: 4.2rem;
+      font-weight: 800;
+      font-family: 'Outfit', sans-serif;
+      color: #FFFFFF;
+    }
+
+    /* Professional Real-time Leaderboard Card */
+    .leaderboard-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 24px;
+      padding: 20px;
+      box-shadow: 0 6px 20px rgba(37, 99, 235, 0.02);
+      width: 100%;
+    }
+
+    .leaderboard-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid var(--border-color);
+      padding-bottom: 12px;
+      margin-bottom: 14px;
+    }
+
+    .leaderboard-header h3 {
+      font-family: 'Outfit', sans-serif;
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--accent-blue);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .leaderboard-header span {
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: var(--text-secondary);
+      background: #EFF6FF;
+      padding: 4px 10px;
+      border-radius: 12px;
+    }
+
+    .leaderboard-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      max-height: 180px;
+      overflow-y: auto;
+    }
+
+    .leaderboard-list::-webkit-scrollbar {
+      width: 4px;
+    }
+    .leaderboard-list::-webkit-scrollbar-thumb {
+      background: #E2ECF6;
+      border-radius: 4px;
+    }
+
+    .leaderboard-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 14px;
+      background: #F8FAFC;
+      border-radius: 12px;
+      border: 1px solid transparent;
+      transition: all 0.2s ease;
+    }
+
+    .leaderboard-item.me {
+      background: #EFF6FF;
+      border-color: rgba(37, 99, 235, 0.15);
+    }
+
+    .leaderboard-item:hover {
+      background: #F1F5F9;
+      transform: translateX(3px);
+    }
+
+    .leaderboard-rank-name {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .leaderboard-rank {
+      font-weight: 800;
+      font-size: 0.85rem;
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      background: #E2E8F0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-secondary);
+    }
+
+    .leaderboard-rank.top-1 { background: #FEF08A; color: #854D0E; }
+    .leaderboard-rank.top-2 { background: #E2E8F0; color: #475569; }
+    .leaderboard-rank.top-3 { background: #FFEDD5; color: #9A3412; }
+
+    .leaderboard-name {
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+
+    .leaderboard-item.me .leaderboard-name {
+      color: var(--accent-blue);
+      font-weight: 700;
+    }
+
+    .leaderboard-score {
+      font-family: 'Outfit', sans-serif;
+      font-weight: 700;
+      font-size: 1.05rem;
+      color: var(--accent-blue);
+    }
+
+    @media (max-width: 480px) {
+      .logo h1 { font-size: 2rem; }
+      .buzzer-btn { width: 190px; height: 190px; }
+      .buzzer-btn .btn-text { font-size: 1.45rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Confetti Canvas -->
+  <canvas id="confetti-canvas" style="position:fixed; top:0; left:0; width:100%; height:100%; pointer-events:none; z-index:9999;"></canvas>
+
+  <div id="login-view">
+    <div class="premium-card" style="display: flex; flex-direction: column; gap: 24px;">
+      <div class="logo">
+        <h1>Quiz Buzzer</h1>
+        <p>Gunakan nama kuis Anda untuk mendaftar</p>
+      </div>
+      <div class="form-group">
+        <label for="name-input">Nama Lengkap</label>
+        <input type="text" id="name-input" placeholder="Tulis nama Anda..." autocomplete="off" maxlength="20">
+      </div>
+      <button class="btn-primary" id="join-btn">Gabung Kuis</button>
+    </div>
+  </div>
+
+  <div id="buzzer-view" class="hidden">
+    <div class="player-header">
+      <div class="player-profile">
+        <div class="player-avatar" id="avatar-char">P</div>
+        <div class="player-name" id="user-name">Player</div>
+      </div>
+      <div class="my-score-badge">Skor: <span id="my-score">0</span></div>
+    </div>
+
+    <div class="buzzer-area">
+      <div class="status-badge waiting" id="status-text">Menghubungkan ke Host...</div>
+      <button class="buzzer-btn" id="buzzer-btn" disabled>
+        <span class="btn-text">Tunggu</span>
+      </button>
+    </div>
+
+    <!-- Leaderboard Panel -->
+    <div class="leaderboard-card">
+      <div class="leaderboard-header">
+        <h3>🏆 Papan Skor</h3>
+        <span id="player-count">0 Pemain</span>
+      </div>
+      <div id="leaderboard-list" class="leaderboard-list">
+        <!-- Dynamically Populated -->
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Confetti System
+    class Confetti {
+      constructor(canvasId) {
+        this.canvas = document.getElementById(canvasId);
+        this.ctx = this.canvas.getContext('2d');
+        this.particles = [];
+        this.animationFrame = null;
+        this.colors = ['#3B82F6', '#60A5FA', '#10B981', '#F59E0B', '#EF4444', '#EC4899'];
+        
+        window.addEventListener('resize', () => this.resize());
+        this.resize();
+      }
+      
+      resize() {
+        this.canvas.width = window.innerWidth;
+        this.canvas.height = window.innerHeight;
+      }
+      
+      spawn() {
+        this.particles = [];
+        for (let i = 0; i < 100; i++) {
+          this.particles.push({
+            x: Math.random() * this.canvas.width,
+            y: Math.random() * this.canvas.height - this.canvas.height,
+            r: Math.random() * 6 + 4,
+            color: this.colors[Math.floor(Math.random() * this.colors.length)],
+            tilt: Math.random() * 10 - 5,
+            tiltAngleIncremental: Math.random() * 0.07 + 0.02,
+            tiltAngle: 0,
+            vy: Math.random() * 4 + 3
+          });
+        }
+        if (this.animationFrame) cancelAnimationFrame(this.animationFrame);
+        this.animate();
+      }
+      
+      animate() {
+        this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+        let living = false;
+        this.particles.forEach((p) => {
+          p.tiltAngle += p.tiltAngleIncremental;
+          p.y += p.vy;
+          p.x += Math.sin(p.tiltAngle) * 0.5;
+          p.tilt = Math.sin(p.tiltAngle) * 15;
+          
+          if (p.y < this.canvas.height) {
+            living = true;
+          }
+          
+          this.ctx.beginPath();
+          this.ctx.lineWidth = p.r;
+          this.ctx.strokeStyle = p.color;
+          this.ctx.moveTo(p.x + p.tilt + p.r/2, p.y);
+          this.ctx.lineTo(p.x + p.tilt, p.y + p.tilt + p.r/2);
+          this.ctx.stroke();
+        });
+        
+        if (living) {
+          this.animationFrame = requestAnimationFrame(() => this.animate());
+        } else {
+          this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+        }
+      }
+    }
+
+    const confetti = new Confetti('confetti-canvas');
+
+    let ws = null;
+    let wasKicked = false;
+    let myName = '';
+    let gameState = 'waiting';
+    let canBuzz = false;
+    let countdownTimer = null;
+    let audioCtx = null;
+
+    const loginView = document.getElementById('login-view');
+    const buzzerView = document.getElementById('buzzer-view');
+    const nameInput = document.getElementById('name-input');
+    const joinBtn = document.getElementById('join-btn');
+    const buzzerBtn = document.getElementById('buzzer-btn');
+    const statusText = document.getElementById('status-text');
+    const userNameEl = document.getElementById('user-name');
+    const avatarCharEl = document.getElementById('avatar-char');
+    const myScoreEl = document.getElementById('my-score');
+    const leaderboardList = document.getElementById('leaderboard-list');
+    const playerCountEl = document.getElementById('player-count');
+    const btnText = document.querySelector('.btn-text');
+
+    function initAudio() {
+      if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    }
+
+    function playTone(freq, duration, type = 'sine', delay = 0) {
+      if (!audioCtx) initAudio();
+      if (audioCtx.state === 'suspended') audioCtx.resume();
+      
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      osc.connect(gain);
+      gain.connect(audioCtx.destination);
+      osc.frequency.value = freq;
+      osc.type = type;
+      gain.gain.setValueAtTime(0.2, audioCtx.currentTime + delay);
+      gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + delay + duration);
+      osc.start(audioCtx.currentTime + delay);
+      osc.stop(audioCtx.currentTime + delay + duration);
+    }
+
+    function playBuzzSound() {
+      playTone(880, 0.15, 'triangle');
+    }
+
+    function playCountBeep() {
+      playTone(440, 0.1);
+    }
+
+    function playGoSound() {
+      playTone(523.25, 0.1, 'sine');
+      setTimeout(() => playTone(659.25, 0.1, 'sine'), 100);
+      setTimeout(() => playTone(783.99, 0.2, 'sine'), 200);
+    }
+
+    function playWinSound() {
+      if (!audioCtx) initAudio();
+      const now = audioCtx.currentTime;
+      const notes = [261.63, 329.63, 392.00, 523.25, 659.25, 783.99, 1046.50];
+      notes.forEach((freq, i) => {
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(freq, now + i * 0.08);
+        gain.gain.setValueAtTime(0.15, now + i * 0.08);
+        gain.gain.exponentialRampToValueAtTime(0.01, now + i * 0.08 + 0.3);
+        osc.start(now + i * 0.08);
+        osc.stop(now + i * 0.08 + 0.3);
+      });
+    }
+
+    function playWrongSound() {
+      playTone(180, 0.3, 'sine');
+    }
+
+    function connect() {
+      const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+      ws = new WebSocket(`${protocol}//${window.location.host}/ws`);
+
+      ws.onopen = () => {
+        ws.send(JSON.stringify({ action: 'join', name: myName }));
+      };
+
+      ws.onmessage = (event) => {
+        try {
+          handleMessage(JSON.parse(event.data));
+        } catch (e) {}
+      };
+
+      ws.onclose = () => {
+        if (wasKicked) return;
+        statusText.textContent = "Menghubungkan ke Host...";
+        statusText.className = "status-badge waiting";
+        setTimeout(connect, 2000);
+      };
+    }
+
+    function handleMessage(data) {
+      const status = data.status;
+      const gs = data.gameState;
+      const winner = data.winner;
+      const msg = data.message || '';
+      const timer = data.timer;
+      const players = data.players || [];
+      const scores = data.scores || {};
+
+      renderLeaderboard(players, scores);
+
+      if (scores[myName] !== undefined) {
+        myScoreEl.textContent = scores[myName];
+      }
+
+      statusText.textContent = msg;
+      statusText.className = 'status-badge';
+
+      if (status === 'error' || status === 'full') {
+        if (msg.includes('dikeluarakan') || msg.includes('kick') || msg.includes('keluar')) {
+          wasKicked = true;
+          alert(msg);
+          ws.close();
+          location.reload();
+          return;
+        }
+        statusText.classList.add('waiting');
+        playWrongSound();
+        return;
+      }
+
+      gameState = gs || 'waiting';
+
+      if (gameState === 'waiting') {
+        statusText.classList.add('waiting');
+        buzzerBtn.className = 'buzzer-btn';
+        buzzerBtn.disabled = true;
+        btnText.className = 'btn-text';
+        btnText.textContent = 'Tunggu';
+        canBuzz = false;
+        if (countdownTimer) clearInterval(countdownTimer);
+      } else if (gameState === 'playing') {
+        if (timer && timer > 0) {
+          statusText.classList.add('waiting');
+          canBuzz = false;
+          buzzerBtn.disabled = true;
+          startCountdown(timer);
+        } else {
+          statusText.classList.add('ready');
+          buzzerBtn.className = 'buzzer-btn active';
+          buzzerBtn.disabled = false;
+          btnText.className = 'btn-text';
+          btnText.textContent = 'Tekan!';
+          canBuzz = true;
+          playGoSound();
+        }
+      } else if (gameState === 'finished' || status === 'locked') {
+        statusText.classList.add('winner');
+        if (winner === myName) {
+          buzzerBtn.className = 'buzzer-btn winner';
+          buzzerBtn.disabled = false;
+          btnText.className = 'btn-text';
+          btnText.textContent = 'Sukses!';
+          canBuzz = false;
+          playWinSound();
+          confetti.spawn();
+          if (navigator.vibrate) navigator.vibrate([200, 100, 200]);
+        } else {
+          buzzerBtn.className = 'buzzer-btn';
+          buzzerBtn.disabled = true;
+          btnText.className = 'btn-text';
+          btnText.textContent = winner;
+          canBuzz = false;
+        }
+      }
+    }
+
+    function renderLeaderboard(players, scores) {
+      playerCountEl.textContent = `${players.length} Pemain`;
+      
+      const sortedPlayers = [...players].sort((a, b) => {
+        return (scores[b] ?? 0) - (scores[a] ?? 0);
+      });
+
+      leaderboardList.innerHTML = '';
+      sortedPlayers.forEach((player, index) => {
+        const item = document.createElement('div');
+        item.className = `leaderboard-item ${player === myName ? 'me' : ''}`;
+        
+        let rankClass = '';
+        if (index === 0) rankClass = 'top-1';
+        else if (index === 1) rankClass = 'top-2';
+        else if (index === 2) rankClass = 'top-3';
+
+        item.innerHTML = `
+          <div class="leaderboard-rank-name">
+            <span class="leaderboard-rank ${rankClass}">${index + 1}</span>
+            <span class="leaderboard-name">${player}</span>
+          </div>
+          <span class="leaderboard-score">${scores[player] ?? 0} pts</span>
+        `;
+        leaderboardList.appendChild(item);
+      });
+    }
+
+    function startCountdown(seconds) {
+      if (countdownTimer) clearInterval(countdownTimer);
+      canBuzz = false;
+      buzzerBtn.disabled = true;
+      buzzerBtn.className = 'buzzer-btn countdown';
+      btnText.className = 'countdown-number';
+      let remaining = seconds;
+      btnText.textContent = remaining;
+      
+      countdownTimer = setInterval(() => {
+        remaining--;
+        if (remaining <= 0) {
+          clearInterval(countdownTimer);
+          countdownTimer = null;
+          buzzerBtn.className = 'buzzer-btn active';
+          buzzerBtn.disabled = false;
+          btnText.className = 'btn-text';
+          btnText.textContent = 'Tekan!';
+          canBuzz = true;
+          playGoSound();
+        } else {
+          btnText.textContent = remaining;
+          playCountBeep();
+        }
+      }, 1000);
+    }
+
+    function buzz() {
+      if (ws && ws.readyState === WebSocket.OPEN && canBuzz) {
+        playBuzzSound();
+        ws.send(JSON.stringify({ action: 'buzz', name: myName }));
+        canBuzz = false;
+      }
+    }
+
+    joinBtn.addEventListener('click', () => {
+      const name = nameInput.value.trim();
+      if (!name) { nameInput.focus(); return; }
+      initAudio();
+      playBuzzSound();
+      myName = name;
+      userNameEl.textContent = name;
+      avatarCharEl.textContent = name[0].toUpperCase();
+      loginView.classList.add('hidden');
+      buzzerView.classList.remove('hidden');
+      connect();
+    });
+
+    nameInput.addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') joinBtn.click();
+    });
+
+    buzzerBtn.addEventListener('click', buzz);
+    
+    document.addEventListener('keydown', (e) => {
+      if (e.code === 'Space' && !buzzerBtn.disabled && canBuzz) {
+        e.preventDefault();
+        buzz();
+      }
+    });
+
+    nameInput.focus();
+  </script>
+</body>
+</html>

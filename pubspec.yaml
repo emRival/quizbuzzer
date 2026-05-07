@@ -1,0 +1,32 @@
+name: quiz_buzzer
+description: "Local Network Quiz Buzzer - Host application for educational events"
+publish_to: 'none'
+version: 1.0.0+1
+
+environment:
+  sdk: ^3.7.0
+
+dependencies:
+  flutter:
+    sdk: flutter
+  cupertino_icons: ^1.0.8
+  flutter_riverpod: ^2.5.1
+  shelf: ^1.4.1
+  shelf_router: ^1.1.4
+  shelf_static: ^1.1.2
+  shelf_web_socket: ^1.0.4
+  web_socket_channel: ^2.4.1
+  network_info_plus: ^5.0.3
+  window_manager: ^0.3.8
+  qr_flutter: ^4.1.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^5.0.0
+
+flutter:
+  uses-material-design: true
+  assets:
+    - web/
+    - assets/sounds/
